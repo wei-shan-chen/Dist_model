@@ -123,12 +123,12 @@ void processInput(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-	
+
 	if(glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
 		go = 1;
 	if(glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
 		tmp = !tmp;
-	
+
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 		camera.ProcessKeyboard(FORWARD, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
@@ -149,15 +149,15 @@ void processInput(GLFWwindow *window)
 		camera.ProcessKeyboard(YAWUP, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
 		camera.ProcessKeyboard(YAWDOWN, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && !blinnKeyPressed) 
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && !blinnKeyPressed)
     {
         blinn = !blinn;
         blinnKeyPressed = true;
 		std::cout << (blinn ? "Blinn-Phong" : "Phong") << std::endl;
     }
-    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE) 
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE)
     	blinnKeyPressed = false;
-    
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
