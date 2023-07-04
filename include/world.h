@@ -5,12 +5,12 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
-#include <cstdlib> 
-#include <ctime> 
+#include <cstdlib>
+#include <ctime>
 #include <glm/glm.hpp>
 #include "Vertex.h"
 #include "SOM.h"
-#include "BounderVoxel.h"
+#include "RAWmodel.h"
 
 struct World {
 
@@ -18,10 +18,10 @@ struct World {
     std::vector<unsigned int> squ_indices;
     std::vector<Vertex> tri;
     std::vector<Vertex> cube;
-    std::vector<Vertex> voxelBall;
+    std::vector<Vertex> voxel;
 };
 
-void create_world(VoxData_b* bounderVoxelData, int bounderNum,int* numVoxelFace);
+void create_world(SurfaceVoxModel_t  voxelModel);
 void destroy_world();
 // extern int voxelBallPointNum;
 extern struct World world;

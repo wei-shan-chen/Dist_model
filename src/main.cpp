@@ -72,15 +72,12 @@ int main()
 	// ------------------------------------
 	OurShader_Create();
 	int numVoxelFace = 0;
-	RAWmodel rawmodel;
-	// rawmodel.LoadFile("raw/tetrahedronno.inf", "raw/tetrahedronno.raw");
-	rawmodel.LoadFile("raw/ball67_dist.inf", "raw/ball67_dist.raw");
-	// rawmodel.LoadFile("raw/utah_teapot_dist.inf", "raw/utah_teapot_dist.raw");
+	rawmodel.LoadFile("raw/input/ball21_dist.inf",  "raw/input/ball21_dist.raw", "raw/output/newball21_dist.raw");
 	// std::cout << numVoxelFace << std::endl;
-	create_world(rawmodel.bounderVoxelData, rawmodel.bounderNum,&numVoxelFace);
+	create_world(rawmodel.voxelModel);
 	// std::cout << numVoxelFace << std::endl;
 	Item floor(world.square);
-	Item voxelball(world.voxelBall);
+	Item voxelball(world.voxel);
 	Item cube(world.cube);
 	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(window))
