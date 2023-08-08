@@ -26,7 +26,7 @@ RAWmodel_cls::~RAWmodel_cls(){
 void RAWmodel_cls::LoadFile(const char* infFileName,const char* rawFileName, const char* newrawFileName){
     LoadINFfile(infFileName);
     CreateRawData();
-    LoadRAWfile(rawFileName);
+    LoadRAWfile(rawFileName, newrawFileName);
 
 }
 std::vector<glm::ivec3> RAWmodel_cls::Voxel_Position(int layer){
@@ -94,10 +94,13 @@ void RAWmodel_cls::CreateRawData(){
     int rawSize = infdata.resolution[0] * infdata.resolution[1] * infdata.resolution[2];
     if(infdata.type == 0){
         uc_voxelData = (BYTE*)malloc(sizeof(BYTE) * rawSize);
+        new_uc_voxelData = (BYTE*)malloc(sizeof(BYTE) * rawSize);
     }else if(infdata.type == 1){
         f_voxelData = (float*)malloc(sizeof(float)* rawSize);
+        new_f_voxelData = (float*)malloc(sizeof(float)* rawSize);
     }else if(infdata.type == 2){
         d_voxelData = (double*)malloc(sizeof(double)* rawSize);
+        new_d_voxelData = (double*)malloc(sizeof(double)* rawSize);
     }
     rawData = (RawData_t***)malloc(sizeof(RawData_t**) * infdata.resolution[2]);
     for(int i = 0; i < infdata.resolution[2]; i++){
@@ -112,7 +115,7 @@ void RAWmodel_cls::CreateRawData(){
     }
 }
 
-bool RAWmodel_cls::LoadRAWfile(const char* rawFileName){
+bool RAWmodel_cls::LoadRAWfile(const char* rawFileName, const char* newrawFileName){
     FILE *file = NULL;
     errno_t err;                    //record error
     file = fopen(rawFileName, "r"); // err = 0 success, err != fail
@@ -137,26 +140,26 @@ bool RAWmodel_cls::LoadRAWfile(const char* rawFileName){
     fclose(file);
 
     // write file
-    // FILE *fp;
-    // fp = fopen( newraw , "w" );
-    // if(file == NULL){
-    //     std::cout << "Failed to open empty rawfile" << std::endl;
-    //     return false;
-    // }
-    // int size = (infdata.resolution[0]) * (infdata.resolution[1]) * (infdata.resolution[2]);
-    // // fwrite(test , sizeof(int) , sizeof(test) , fp );
-    // if(infdata.type == 0){
-    //     fwrite(new_uc_voxelData, sizeof(BYTE) , size, file);
-    // }
-    // if(infdata.type == 1){
-    //     fwrite(new_f_voxelData, sizeof(float), size, file);
-    // }
-    // if(infdata.type == 2){
-    //     fwrite(new_d_voxelData, sizeof(double), size, file);
+    FILE *fp;
+    fp = fopen( newrawFileName , "w" );
+    if(file == NULL){
+        std::cout << "Failed to open empty rawfile" << std::endl;
+        return false;
+    }
+    int size = (infdata.resolution[0]) * (infdata.resolution[1]) * (infdata.resolution[2]);
+    // fwrite(test , sizeof(int) , sizeof(test) , fp );
+    if(infdata.type == 0){
+        fwrite(new_uc_voxelData, sizeof(BYTE) , size, file);
+    }
+    if(infdata.type == 1){
+        fwrite(new_f_voxelData, sizeof(float), size, file);
+    }
+    if(infdata.type == 2){
+        fwrite(new_d_voxelData, sizeof(double), size, file);
 
-    // }
+    }
 
-    // fclose(fp);
+    fclose(fp);
 
 
     return true;
@@ -167,9 +170,9 @@ bool RAWmodel_cls::ReadRawFile(FILE *file){
     int size = infdata.resolution[0] * infdata.resolution[1] * infdata.resolution[2];
     if(infdata.type == 0){
         fread(uc_voxelData, sizeof(BYTE),size, file);
-        for(int i = 1; i < infdata.resolution[2]-1; i++){
-            for(int j = 1; j < infdata.resolution[1]-1; j++){
-                for(int k = 1; k < infdata.resolution[0]-1; k++){
+        for(int i = 0; i < infdata.resolution[2]; i++){
+            for(int j = 0; j < infdata.resolution[1]; j++){
+                for(int k = 0; k < infdata.resolution[0]; k++){
                     int num = k + j*infdata.resolution[0] + i*infdata.resolution[0]* infdata.resolution[1];
                     rawData[i][j][k].layer = (short int)uc_voxelData[num];
                     // cout << (int)uc_voxelData[num] << ", ";
@@ -184,26 +187,26 @@ bool RAWmodel_cls::ReadRawFile(FILE *file){
         return true;
     }else if(infdata.type == 1){
         fread(f_voxelData, sizeof(float),size, file);
-        for(int i = 1; i < infdata.resolution[2]-1; i++){
-            for(int j = 1; j < infdata.resolution[1]-1; j++){
-                for(int k = 1; k < infdata.resolution[0]-1; k++){
+        for(int i = 0; i < infdata.resolution[2]; i++){
+            for(int j = 0; j < infdata.resolution[1]; j++){
+                for(int k = 0; k < infdata.resolution[0]; k++){
                     int num = k + j*infdata.resolution[0] + i*infdata.resolution[0]* infdata.resolution[1];
                     rawData[i][j][k].layer = (short int)f_voxelData[num];
-                    // cout << rawData[i][j][k].layer << ", ";
+                    // cout << rawData[i][j][k].layer << " ";
                     if(rawData[i][j][k].layer == 0){
                         layernum++;
                     }
                 }
                 // cout << "\n";
             }
-
+            // cout << "\n\n";
         }
         return true;
     }else if(infdata.type == 2){
         fread(d_voxelData, sizeof(double),size, file);
-        for(int i = 1; i < infdata.resolution[2]-1; i++){
-            for(int j = 1; j < infdata.resolution[1]-1; j++){
-                for(int k = 1; k < infdata.resolution[0]-1; k++){
+        for(int i = 0; i < infdata.resolution[2]; i++){
+            for(int j = 0; j < infdata.resolution[1]; j++){
+                for(int k = 0; k < infdata.resolution[0]; k++){
                     int num = k + j*infdata.resolution[0] + i*infdata.resolution[0]* infdata.resolution[1];
                     rawData[i][j][k].layer = (short int)d_voxelData[num];
                     if(rawData[i][j][k].layer == 0){
@@ -220,28 +223,26 @@ bool RAWmodel_cls::ReadRawFile(FILE *file){
 
 void RAWmodel_cls::SetVoxelData(){
 
-    if(infdata.resolution[0] > infdata.resolution[1] && infdata.resolution[0] > infdata.resolution[2]){
-        for(short int z = 0, x = 1,y = 1; z < infdata.resolution[0]; z++){
-            FindOutterLayer(x, y, z);
-        }
-    }else if(infdata.resolution[1] > infdata.resolution[0] && infdata.resolution[1] > infdata.resolution[2]){
-        for(short int x = 0, z = 1,y = 1; x < infdata.resolution[1]; x++){
-            FindOutterLayer(x, y, z);
-        }
-    }else{
-        for(short int y = 0, x = 1,z = 1; y < infdata.resolution[2]; y++){
-            FindOutterLayer(x, y, z);
-        }
-    }
+    FindOutterLayer();
 
-    for(int y = 1; y < infdata.resolution[2]-1; y++){
-        for(int x = 1; x < infdata.resolution[1]-1; x++){
-            for(int z = 1; z < infdata.resolution[0]-1; z++){
+    for(int y = 0; y < infdata.resolution[2]; y++){
+        for(int x = 0; x < infdata.resolution[1]; x++){
+            for(int z = 0; z < infdata.resolution[0]; z++){
                 if(rawData[y][x][z].layer == 0){
                     voxelModel.voxel.push_back(USVoxData_t{{x,y,z},{}});
-                    findSurfaceVoxel(y, x, z, voxelModel.voxel.size()-1, 0);
+                    // findSurfaceVoxel(y, x, z, voxelModel.voxel.size()-1, 0);
                     setMaxbounder(x, y, z);
                     voxelModel.num++;
+                }
+                int num = z + x*infdata.resolution[0] + y*infdata.resolution[0]* infdata.resolution[1];
+                if(infdata.type == 0){
+                    new_uc_voxelData[num] = (BYTE)rawData[y][x][z].layer;
+                }
+                if(infdata.type == 1){
+                    new_f_voxelData[num] = (float)rawData[y][x][z].layer;
+                }
+                if(infdata.type == 2){
+                    new_d_voxelData[num] = (double)rawData[y][x][z].layer;
                 }
 
             }
@@ -249,37 +250,91 @@ void RAWmodel_cls::SetVoxelData(){
     }
 }
 
-void RAWmodel_cls::FindOutterLayer(short int x, short int y, short int z){
-    // 先用2D 測試
-    if(x < 0 || x >= infdata.resolution[1]) return;
-    if(y < 0 || y >= infdata.resolution[2]) return;
-    if(z < 0 || z >= infdata.resolution[0]) return;
-
-    if(rawData[y][x][z].air || rawData[y][x][z].layer == 0){
-        return;
-    }
-
-    rawData[y][x][z].air = true;
-    if(rawData[y][x][z].layer != -1) rawData[y][x][z].layer *= -1;
-
-
-    if(infdata.resolution[0] > infdata.resolution[1] && infdata.resolution[0] > infdata.resolution[2]){
-        FindOutterLayer(x+1, y, z);
-        FindOutterLayer(x-1, y, z);
-        FindOutterLayer(x, y+1, z);
-        FindOutterLayer(x, y-1, z);
-    }else if(infdata.resolution[1] > infdata.resolution[0] && infdata.resolution[1] > infdata.resolution[2]){
-        FindOutterLayer(x, y, z+1);
-        FindOutterLayer(x, y, z-1);
-        FindOutterLayer(x, y+1, z);
-        FindOutterLayer(x, y-1, z);
-    }else{
-        FindOutterLayer(x, y, z+1);
-        FindOutterLayer(x, y, z-1);
-        FindOutterLayer(x+1, y, z);
-        FindOutterLayer(x-1, y, z);
-    }
-
+void RAWmodel_cls::FindOutterLayer(){
+     for(short int x = 0; x < infdata.resolution[1]; x++){
+            for(short int y = 0; y < infdata.resolution[2]; y++){
+                bool zero = false;
+                for(short int z = 0; z < infdata.resolution[0]; z++){
+                    if(zero){
+                        if(rawData[y][x][z].layer > 0)
+                            if(rawData[y-1][x][z].layer < 0)
+                                rawData[y][x][z].layer*=-1;
+                    }else{
+                        if(rawData[y][x][z].layer == 0) zero = true;
+                        else if(rawData[y][x][z].layer > 0) rawData[y][x][z].layer*=-1;
+                    }
+                }
+            }
+            for(short int y = infdata.resolution[2]-1; y >= 0; y--){
+                bool zero = false;
+                for(short int z = infdata.resolution[0]-1; z >= 0; z--){
+                    if(zero){
+                        if(rawData[y][x][z].layer > 0)
+                            if(rawData[y+1][x][z].layer < 0)
+                                rawData[y][x][z].layer*=-1;
+                    }else{
+                        if(rawData[y][x][z].layer == 0) zero = true;
+                        else if(rawData[y][x][z].layer > 0) rawData[y][x][z].layer*=-1;
+                    }
+                }
+            }
+        }
+        for(short int y = 0; y < infdata.resolution[2]; y++){
+            for(short int z = 0; z < infdata.resolution[0]; z++){
+                bool zero = false;
+                for(short int x = 0; x < infdata.resolution[1]; x++){
+                    if(zero){
+                        if(rawData[y][x][z].layer > 0)
+                            if(rawData[y][x][z-1].layer < 0)
+                                rawData[y][x][z].layer*=-1;
+                    }else{
+                        if(rawData[y][x][z].layer == 0) zero = true;
+                        else if(rawData[y][x][z].layer > 0) rawData[y][x][z].layer*=-1;
+                    }
+                }
+            }
+            for(short int z = infdata.resolution[0]-1; z >= 0; z--){
+                bool zero = false;
+                for(short int x = infdata.resolution[1]-1; x >= 0; x--){
+                    if(zero){
+                        if(rawData[y][x][z].layer > 0)
+                            if(rawData[y][x][z+1].layer < 0)
+                                rawData[y][x][z].layer*=-1;
+                    }else{
+                        if(rawData[y][x][z].layer == 0) zero = true;
+                        else if(rawData[y][x][z].layer > 0) rawData[y][x][z].layer*=-1;
+                    }
+                }
+            }
+        }
+        for(short int z = 0; z < infdata.resolution[0]; z++){
+            for(short int x = 0; x < infdata.resolution[1]; x++){
+                bool zero = false;
+                for(short int y = 0; y < infdata.resolution[2]; y++){
+                    if(zero){
+                        if(rawData[y][x][z].layer > 0)
+                            if(rawData[y][x-1][z].layer < 0)
+                                rawData[y][x][z].layer*=-1;
+                    }else{
+                        if(rawData[y][x][z].layer == 0) zero = true;
+                        else if(rawData[y][x][z].layer > 0) rawData[y][x][z].layer*=-1;
+                    }
+                }
+            }
+            for(short int x = infdata.resolution[1]-1; x >= 0; x--){
+                bool zero = false;
+                for(short int y = infdata.resolution[2]-1; y >= 0; y--){
+                    if(zero){
+                        if(rawData[y][x][z].layer > 0)
+                            if(rawData[y][x+1][z].layer < 0)
+                                rawData[y][x][z].layer*=-1;
+                    }else{
+                        if(rawData[y][x][z].layer == 0) zero = true;
+                        else if(rawData[y][x][z].layer > 0) rawData[y][x][z].layer*=-1;
+                    }
+                }
+            }
+        }
 }
 
 void RAWmodel_cls::setMaxbounder(int i, int j, int k){

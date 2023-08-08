@@ -10,7 +10,7 @@
 #include "matrixStack.h"
 #include "item.h"
 #include "world.h"
-#include "SOM.h"
+// #include "SOM.h"
 #include "camera.h"
 #include "RAWmodel.h"
 #include "Drawmodel.h"
@@ -72,7 +72,7 @@ int main()
 	// ------------------------------------
 	OurShader_Create();
 	int numVoxelFace = 0;
-	rawmodel.LoadFile("raw/input/ball21_dist.inf",  "raw/input/ball21_dist.raw", "raw/output/newball21_dist.raw");
+	rawmodel.LoadFile("raw/input/teapot_dist.inf",  "raw/input/teapot_dist.raw", "raw/output/teapot_df.raw");
 	// std::cout << numVoxelFace << std::endl;
 	create_world(rawmodel.voxelModel);
 	// std::cout << numVoxelFace << std::endl;

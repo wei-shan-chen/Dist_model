@@ -4,12 +4,12 @@ out vec4 FragColor;
 in VS_OUT{
     vec3 FragPos;
 	vec3 Normal;
-	// vec2 TexCoords;
+	//vec2 TexCoords;
 } fs_in;
 
 // struct DirLight {
 //     vec3 direction;
-	
+
 //     vec3 ambient;
 //     vec3 diffuse;
 //     vec3 specular;
@@ -19,14 +19,14 @@ in VS_OUT{
 //     vec3 direction;
 //     float cutOff;
 //     float outerCutOff;
-  
+
 //     float constant;
 //     float linear;
 //     float quadratic;
-  
+
 //     vec3 ambient;
 //     vec3 diffuse;
-//     vec3 specular;       
+//     vec3 specular;
 // };
 
 // uniform DirLight dirLight;
@@ -41,30 +41,27 @@ uniform bool blinn;
 // vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 void main()
 {
+     // ka,kd,ks   ia,id,is
+    float ka = 0.4, kd = 0.8, ks = 0.4;
+    vec3 Ia = vec3(0.6, 0.6, 0.6);
+    vec3 Id = vec3(0.8, 0.8, 0.8);
+    vec3 Is = vec3(0.4, 0.4, 0.4);
+
     // ambient
-    vec3 ambient = 0.05 * objectColor;
+    vec3 ambient = ka * Ia;
     // diffuse
-    vec3 lightDir = normalize(lightPos - fs_in.FragPos);
-    vec3 normal = normalize(fs_in.Normal);
-    float diff = max(dot(lightDir, normal), 0.0);
-    vec3 diffuse = diff * objectColor;
+    vec3 L = normalize(lightPos - fs_in.FragPos);
+    vec3 N = normalize(fs_in.Normal);
+    vec3 diffuse = kd * Id * max(dot(L, N), 0.0);
     // specular
-    vec3 viewDir = normalize(viewPos - fs_in.FragPos);
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = 0.0;
-    if(blinn)
-    {
-        vec3 halfwayDir = normalize(lightDir + viewDir);  
-        spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-    }
-    else
-    {
-        vec3 reflectDir = reflect(-lightDir, normal);
-        spec = pow(max(dot(viewDir, reflectDir), 0.0), 8.0);
-    }
-    vec3 specular = vec3(0.3) * spec; // assuming bright white light color
-    FragColor = vec4(ambient + diffuse + specular, 1.0);
-} 
+    vec3 V = normalize(viewPos - fs_in.FragPos);
+    vec3 R = reflect(-1*L, N);
+    vec3 specular = ks * Is * pow(max(dot(V, R), 0.0), 256.0);
+
+
+    vec3 I =  vec3(ambient + diffuse + specular)*objectColor;
+    FragColor = vec4(I, 1.0);
+}
 
 // vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 // {
@@ -90,9 +87,9 @@ void main()
 //     float spec = max(dot(viewDir, reflectDir), 0.0);
 //     // attenuation
 //     float distance = length(light.position - fragPos);
-//     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
+//     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 //     // spotlight intensity
-//     float theta = dot(lightDir, normalize(-light.direction)); 
+//     float theta = dot(lightDir, normalize(-light.direction));
 //     float epsilon = light.cutOff - light.outerCutOff;
 //     float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
 //     // combine results

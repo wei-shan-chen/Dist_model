@@ -94,11 +94,11 @@ void SOM_IterateOnce()
             {
                 double n_radius = computeScale(neighbor, squaredDist);
                 updateNode(lattice, nowInput, bmu, node, n_radius, n_learning_rate);
-                
+
             }
         }
     }
-    iter++; 
+    iter++;
     is_som_finished = (iter > max_iter);
 }
 
@@ -114,7 +114,7 @@ glm::fvec3 *createInputDataset(std::vector<Vertex> m_MeshTri, int triangleNum)
 {
     glm::fvec3 *dataset = (glm::fvec3 *)malloc(sizeof(glm::fvec3) * triangleNum);
 
-   
+
     for (int i = 0; i < triangleNum; i++)
     {
         double i0 = m_MeshTri[i].position.x;
@@ -153,10 +153,10 @@ glm::fvec3 **createMap(int map_width, int map_height, glm::fvec3 m_MaxPos, glm::
 }
 void destroy(glm::fvec3 **arr, int width, int height)
 {
-    for (int i = 0; i < width; i++)
-    {
-        free(arr[i]);
-    }
+    // for (int i = 0; i < width; i++)
+    // {
+    //     free(arr[i]);
+    // }
 }
 void destroyDataset(glm::fvec3 *arr, int datasteNum){
     free(arr);
@@ -192,7 +192,7 @@ bool isInNeighborhood(double squaredDist, double radius)
 double computeScale(double sigma, double dist)
 {
     double theta = exp((-1 * dist) / (2 * pow(sigma, 2)));
-    
+
     return theta;
 }
 
@@ -200,5 +200,5 @@ void updateNode(glm::fvec3** lattice, glm::fvec3 nowInput,glm::ivec2 bmuId, glm:
     lattice[nodeId.x][nodeId.y].x = lattice[nodeId.x][nodeId.y].x + radius * learning_rate*(nowInput.x-lattice[nodeId.x][nodeId.y].x);
     lattice[nodeId.x][nodeId.y].y = lattice[nodeId.x][nodeId.y].y + radius * learning_rate*(nowInput.y-lattice[nodeId.x][nodeId.y].y);
     lattice[nodeId.x][nodeId.y].z = lattice[nodeId.x][nodeId.y].z + radius * learning_rate*(nowInput.z-lattice[nodeId.x][nodeId.y].z);
-    
+
 }

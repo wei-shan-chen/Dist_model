@@ -1,5 +1,0 @@
-raw-file=piggy_dist.raw
-resolution=156x254x215
-sample-type=unsigned char
-voxel-size=0.100000:0.100000:0.100000
-endian=little

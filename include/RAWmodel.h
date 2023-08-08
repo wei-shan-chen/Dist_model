@@ -66,9 +66,9 @@ private:
 
     void CreateRawData();
 
-    bool LoadRAWfile(const char*rawFileName);
+    bool LoadRAWfile(const char*rawFileName, const char* newrawFileName);
     bool ReadRawFile(FILE *file);
-    void FindOutterLayer(short int x, short int y, short int z);
+    void FindOutterLayer();
 
     void SetVoxelData();
     void findSurfaceVoxel(int z, int y, int x, int num, int layer);
@@ -77,8 +77,11 @@ private:
     void setMaxbounder(int i, int j, int k);
 
     BYTE* uc_voxelData;
+    BYTE* new_uc_voxelData;
     float* f_voxelData;
+    float* new_f_voxelData;
     double* d_voxelData;
+    double* new_d_voxelData;
 
     int layernum = 0;
 
